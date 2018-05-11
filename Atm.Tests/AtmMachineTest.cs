@@ -6,10 +6,12 @@ namespace Atm.Tests
 {
     public class AtmMachineTest
     {
-        private readonly AtmMachine _atm;
+        private readonly AtmMachine atm;
+        private readonly IMoneyCounter counter;
         public AtmMachineTest()
         {
-            _atm = new AtmMachine();
+            counter = new SequentialMoneyCounter();
+            atm = new AtmMachine(counter);
         }
 
         [Theory]
@@ -21,9 +23,9 @@ namespace Atm.Tests
         [InlineData(60, 1, 0, 1, 0)]
         [InlineData(100, 0, 0, 0, 1)]
         [InlineData(400, 0, 0, 0, 4)]
-        public void Atm_ShouldReturnOneBillOf10_When10IsRequested(int value, int of10, int of20, int of50, int of100)
+        public void Atm_ShouldReturnLowestNumberOfBills_ForRequestedValue(int value, int of10, int of20, int of50, int of100)
         {
-            var bills = _atm.Withdraw(value);
+            var bills = atm.Withdraw(value);
             Assert.Equal(of10, bills.Of10);
             Assert.Equal(of20, bills.Of20);
             Assert.Equal(of50, bills.Of50);
